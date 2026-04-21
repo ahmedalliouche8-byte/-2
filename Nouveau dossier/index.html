@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>موقع المباريات</title>
+
+<style>
+body {
+    background: url("https://wallpapercave.com/wp/wp4328523.jpg") no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    font-family: Arial;
+    text-align: center;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: -1;
+}
+
+h1 {
+    margin-top: 20px;
+}
+
+.form input, .form select {
+    padding: 10px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px;
+    background: #00aa88;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+}
+
+.tabs button {
+    margin: 5px;
+}
+
+.match {
+    background: rgba(0,0,0,0.6);
+    margin: 10px auto;
+    padding: 10px;
+    width: 70%;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.actions button {
+    margin: 2px;
+}
+
+.player-box iframe {
+    width: 80%;
+    height: 350px;
+    margin-top: 20px;
+    border-radius: 10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>⚽ مباريات اليوم</h1>
+
+<div class="form">
+    <input type="text" id="home" placeholder="الفريق الأول">
+    <input type="text" id="away" placeholder="الفريق الثاني">
+    <input type="time" id="time">
+
+    <select id="day">
+        <option value="today">اليوم</option>
+        <option value="yesterday">الأمس</option>
+        <option value="tomorrow">الغد</option>
+    </select>
+
+    <input type="text" id="link" placeholder="رابط المشاهدة">
+
+    <button onclick="addMatch()">➕ إضافة مباراة</button>
+</div>
+
+<br>
+
+<div class="tabs">
+    <button onclick="showTab('today')">اليوم</button>
+    <button onclick="showTab('yesterday')">الأمس</button>
+    <button onclick="showTab('tomorrow')">الغد</button>
+</div>
+
+<div id="today"></div>
+<div id="yesterday"></div>
+<div id="tomorrow"></div>
+
+<div class="player-box">
+    <iframe id="player"></iframe>
+</div>
+
+<script>
+let matches = {
+    today: [],
+    yesterday: [],
+    tomorrow: []
+};
+
+function addMatch() {
+    let home = document.getElementById("home").value;
+    let away = document.getElementById("away").value;
+    let time = document.getElementById("time").value;
+    let day = document.getElementById("day").value;
+    let link = document.getElementById("link").value;
+
+    matches[day].push({home, away, time, link});
+    showTab(day);
+}
+
+function deleteMatch(day, index) {
+    matches[day].splice(index, 1);
+    showTab(day);
+}
+
+function watch(link) {
+    document.getElementById("player").src = link;
+}
+
+function showTab(tab) {
+    document.querySelectorAll("div[id]").forEach(d => {
+        if(["today","yesterday","tomorrow"].includes(d.id))
+            d.style.display = "none";
+    });
+
+    let container = document.getElementById(tab);
+    container.style.display = "block";
+    container.innerHTML = "";
+
+    matches[tab].forEach((m, i) => {
+        container.innerHTML += `
+        <div class="match">
+            <div>${m.home} 🆚 ${m.away}</div>
+            <div>${m.time}</div>
+            <div class="actions">
+                <button onclick="watch('${m.link}')">▶ مشاهدة</button>
+                <button onclick="deleteMatch('${tab}',${i})">❌ حذف</button>
+            </div>
+        </div>`;
+    });
+}
+
+showTab("today");
+</script>
+
+</body>
+</html>
